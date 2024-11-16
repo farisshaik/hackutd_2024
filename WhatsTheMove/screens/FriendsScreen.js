@@ -58,21 +58,6 @@ const App = () => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.navbar}>
-        <Pressable style={styles.navItem}>
-          <Feather name="home" size={24} color="#4A90E2" />
-          <Text style={[styles.navText, styles.activeNavText]}>Home</Text>
-        </Pressable>
-        <Pressable style={styles.navItem}>
-          <Feather name="grid" size={24} color="#666" />
-        </Pressable>
-        <Pressable style={styles.navItem}>
-          <Feather name="heart" size={24} color="#666" />
-        </Pressable>
-        <Pressable style={styles.navItem}>
-          <Feather name="user" size={24} color="#666" />
-        </Pressable>
-      </View>
     </SafeAreaView>
   );
 };
