@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 
 // Sample route
 app.get("/greeting", (req, res) => {
-    res.json({message: "Hello from Firebase Functions!"});
+    res.json({message: "Hello huzz!"});
 });
 
 exports.api = functions.region("us-central1").https.onRequest(app);
