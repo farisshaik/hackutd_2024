@@ -2,10 +2,24 @@ const functions = require("firebase-functions");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const multer = require("multer");
+const PinataSDK = require("@pinata/sdk");
+const fs = require("fs");
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+const upload = multer({ dest: "/tmp/" }); // Firebase provides a `/tmp` directory for temporary storage
+
+const dotenv = require("dotenv");
+dotenv.config();
+
+// Initialize Pinata with JWT
+const PINATA_JWT = `Bearer ${process.env.PINATA_JWT}`;
+const pinata = new PinataSDK({
+    pinataJwt: "PINATA_JWT",
+    pinataGateway: "magenta-past-ox-758.mypinata.cloud",
+  });
 
 // Haversine formula to calculate distance between two points
 const haversineDistance = (lat1, lng1, lat2, lng2) => {
@@ -113,6 +127,55 @@ app.post("/calculate-midpoint", (req, res) => {
       .status(500)
       .json({ error: "Failed to calculate fair midpoint." });
   }
+});
+
+app.post("/upload", upload.array("media"), async (req, res) => {
+  const { title, content } = req.body;
+  const files = req.files;
+
+  try {
+    // Upload each file to Pinata and collect their IPFS URLs
+    const uploadedMedia = [];
+    for (const file of files) {
+      const readableStream = fs.createReadStream(file.path);
+      const response = await pinata.pinFileToIPFS(readableStream, {
+        pinataOptions: {
+          cidVersion: 1,
+        },
+      });
+      uploadedMedia.push(`https://gateway.pinata.cloud/ipfs/${response.IpfsHash}`);
+      fs.unlinkSync(file.path); // Clean up the temporary file
+    }
+
+    // Create JSON metadata for the blog post
+    const metadata = {
+      title,
+      content,
+      media: uploadedMedia,
+    };
+
+    // Upload the metadata to Pinata
+    const metadataResponse = await pinata.pinJSONToIPFS(metadata, {
+      pinataOptions: {
+        cidVersion: 1,
+      },
+    });
+
+    // Respond with the IPFS hash and uploaded media URLs
+    res.status(200).json({
+      cid: metadataResponse.IpfsHash,
+      mediaUrls: uploadedMedia,
+    });
+  } catch (error) {
+    console.error("Error uploading to Pinata:", error);
+    res.status(500).send("Error uploading post.");
+  }
+});
+
+app.get("/check-env", (req, res) => {
+  res.json({
+    jwt: functions.config().pinata.jwt ? "Loaded" : "Not Found",
+  });
 });
 
 // Export the API as a Firebase Function

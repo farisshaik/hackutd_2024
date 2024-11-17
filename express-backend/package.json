@@ -10,10 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@pinata/sdk": "^2.1.0",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.21.1",
-    "lint": "^0.8.19"
+    "lint": "^0.8.19",
+    "pinata": "^1.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
