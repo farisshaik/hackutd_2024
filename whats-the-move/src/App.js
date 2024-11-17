@@ -4,6 +4,7 @@ import FriendsScreen from './screens/FriendsScreen';
 import HomeScreen from './screens/HomeScreen';
 import FavoritesScreen from './screens/FavoritesScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import ResultsScreen from './screens/ResultsScreen';
 import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline } from 'react-icons/io5';
 import './App.css'; // Import your CSS file
 
@@ -23,9 +24,9 @@ const TabNavigator = () => (
         </Link>
       </li>
       <li>
-        <Link to="/favorites" className="nav-link">
+        <Link to="/results" className="nav-link">
           <IoHeartOutline size={24} />
-          <span>Favorites</span>
+          <span>Results</span>
         </Link>
       </li>
       <li>
@@ -46,7 +47,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomeScreen />} />
           <Route path="/friends" element={<FriendsScreen />} />
-          <Route path="/favorites" element={<FavoritesScreen />} />
+          <Route path="/results" element={<ResultsScreen />} />
           <Route path="/profile" element={<ProfileScreen />} />
         </Routes>
       </div>
