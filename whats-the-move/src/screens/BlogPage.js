@@ -11,13 +11,13 @@ const BlogPage = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("/api/blogs"); // Replace with your backend endpoint
+        const response = await axios.get("/api/blogs");
         setPosts(response.data.posts); // Assumes response contains a `posts` array
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
     };
-
+  
     fetchPosts();
   }, []);
 

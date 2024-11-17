@@ -10,11 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/secret-manager": "^5.6.0",
     "@pinata/sdk": "^2.1.0",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "lint": "^0.8.19",
+    "multer": "^1.4.5-lts.1",
     "pinata": "^1.8.1"
   },
   "devDependencies": {
