@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import HomePage from './pages/HomePage';  // Import your pages
+import HomePage from './pages/HomePage'; 
 import FriendsPage from './pages/FriendsPage';
 import ProfileScreen from './screens/ProfileScreen';
 import ResultsScreen from './screens/ResultsScreen';
-import Midpoint from './pages/Midpoint'
+import Midpoint from './pages/Midpoint';
 import POI from './pages/PlaceOfInterest';
 import DirectionsPage from './pages/DirectionsPage';
 import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline } from 'react-icons/io5';
-import './App.css'; // Import your CSS file
+import './App.css';
 
 const TabNavigator = () => (
   <nav className="navbar">
@@ -46,20 +46,20 @@ const App = () => {
     <Router>
       <div>
         <TabNavigator />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/friends" element={<FriendsPage />} />
-          <Route path="/results" element={<ResultsScreen />} />
-          <Route path="/profile" element={<ProfileScreen />} />
-          <Route path="/midpoint" element={<Midpoint />} />
-          <Route path="/poi" element={<POI />} />
-          <Route path="/poi" element={<POI />} />
-          <Route path="/directions" element={<DirectionsPage />} />
-
-        </Routes>
+        <div className="content">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/friends" element={<FriendsPage />} />
+            <Route path="/results" element={<ResultsScreen />} />
+            <Route path="/profile" element={<ProfileScreen />} />
+            <Route path="/midpoint" element={<Midpoint />} />
+            <Route path="/poi" element={<POI />} />
+            <Route path="/directions" element={<DirectionsPage />} />
+          </Routes>
+        </div>
       </div>
     </Router>
   );
 };
 
-export default App
+export default App;
