@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import HomePage from './pages/HomePage';  // Import your pages
+import HomePage from './pages/HomePage'; // Import your pages
 import FriendsPage from './pages/FriendsPage';
 import ProfileScreen from './screens/ProfileScreen';
 import ResultsScreen from './screens/ResultsScreen';
-import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline } from 'react-icons/io5';
+import BlogPage from './screens/BlogPage';
+import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline, IoMapOutline } from 'react-icons/io5';
+import { ThemeProvider } from "@material-tailwind/react"; // Import ThemeProvider
 import './App.css'; // Import your CSS file
 
 const TabNavigator = () => (
@@ -29,6 +31,12 @@ const TabNavigator = () => (
         </Link>
       </li>
       <li>
+        <Link to="/blog" className="nav-link">
+          <IoMapOutline size={24} />
+          <span>Explore</span>
+        </Link>
+      </li>
+      <li>
         <Link to="/profile" className="nav-link">
           <IoPersonOutline size={24} />
           <span>Profile</span>
@@ -40,18 +48,21 @@ const TabNavigator = () => (
 
 const App = () => {
   return (
-    <Router>
-      <div>
-        <TabNavigator />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/friends" element={<FriendsPage />} />
-          <Route path="/results" element={<ResultsScreen />} />
-          <Route path="/profile" element={<ProfileScreen />} />
-        </Routes>
-      </div>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <div>
+          <TabNavigator />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/friends" element={<FriendsPage />} />
+            <Route path="/results" element={<ResultsScreen />} />
+            <Route path="/profile" element={<ProfileScreen />} />
+            <Route path="/blog" element={<BlogPage />} />
+          </Routes>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 };
 
-export default App
+export default App;
