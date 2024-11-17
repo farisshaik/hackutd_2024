@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage';  // Import your pages
 import FriendsPage from './pages/FriendsPage';
 import ProfileScreen from './screens/ProfileScreen';
 import ResultsScreen from './screens/ResultsScreen';
+import Midpoint from './pages/Midpoint'
+import POI from './pages/PlaceOfInterest';
 import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline } from 'react-icons/io5';
 import './App.css'; // Import your CSS file
 
@@ -48,6 +50,8 @@ const App = () => {
           <Route path="/friends" element={<FriendsPage />} />
           <Route path="/results" element={<ResultsScreen />} />
           <Route path="/profile" element={<ProfileScreen />} />
+          <Route path="/midpoint" element={<Midpoint />} />
+          <Route path="/poi" element={<POI />} />
         </Routes>
       </div>
     </Router>

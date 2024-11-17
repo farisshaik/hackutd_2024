@@ -70,12 +70,15 @@ const FriendsPage = () => {
                 <GooglePlacesAutocomplete
                   apiKey={API_KEY}
                   selectProps={{
-                    placeholder: "Friend's address",
+                    placeholder: friend.id === 0 ? "Your address" : "Friend's address",
                     onChange: (value) =>
-                      updateFriend(friend.id, "location", {
-                        description: value.label,
-                        place_id: value.value.place_id,
-                      }),
+                      updateFriend(friend.id, "location", 
+                        value ? {
+                          description: value.label,
+                          place_id: value.value.place_id,
+                        } : null
+                      ),
+                    isClearable: true,
                   }}
                 />
               </div>
