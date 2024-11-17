@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,18 +6,34 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  Pressable
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import axios from 'axios';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import 'react-native-get-random-values';
-import { GOOGLE_API_KEY } from '@env'; 
 
 const BASE_URL = 'https://us-central1-hackutd24-whatsthemove.cloudfunctions.net/api'; // Define the base URL  
 
-const App = () => {
+const FriendsScreen = () => {
+  const [friends, setFriends] = useState([{ id: 1, location: null }]);
+  const [locations, setLocations] = useState([]); // To store coordinates of locations
+
+  // Add a new friend
+  const addFriend = () => {
+    setFriends([...friends, { id: friends.length + 1, location: null }]);
+  };
+
+  // Update friend's location
+  const updateLocation = (id, locationData) => {
+    setFriends(friends.map(friend =>
+      friend.id === id ? { ...friend, location: locationData } : friend
+    ));
+  };
+
+  // Handle Continue button, log locations to the console (or send them to your API)
   const handleContinue = async () => {
+    const locationsArray = friends.map(friend => friend.location).filter(location => location !== null);
+    console.log('Locations:', locationsArray);
+    
     try {
       const response = await axios.get(`${BASE_URL}/greeting`);
       console.log('API Response:', response.data);
@@ -33,36 +49,67 @@ const App = () => {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>You</Text>
           <View style={styles.inputWrapper}>
-            <TextInput style={styles.input} placeholder="" />
+            <TextInput style={styles.input} placeholder="Your Location" />
           </View>
         </View>
 
         {/* Friend inputs */}
-        {[1, 2, 3].map((num) => (
-          <View key={num} style={styles.inputContainer}>
-            <Text style={styles.label}>Friend {num}</Text>
+        {friends.map((friend) => (
+          <View key={friend.id} style={styles.inputContainer}>
+            <Text style={styles.label}>Friend {friend.id}</Text>
             <View style={styles.inputWrapper}>
-              <TextInput style={styles.input} placeholder="" />
+              {/* <TextInput
+                style={styles.input}
+                placeholder={`Friend ${friend.id} Location`}
+              /> */}
               <TouchableOpacity style={styles.deleteButton}>
                 <Feather name="trash-2" size={20} color="#666" />
               </TouchableOpacity>
             </View>
+
+            {/* Google Places Input for each friend */}
+            <GooglePlacesAutocomplete
+              placeholder="Search Location"
+              onPress={(data, details = null) => {
+                // Update location for the specific friend
+                updateLocation(friend.id, {
+                  name: data.description,
+                  lat: details.geometry.location.lat,
+                  lng: details.geometry.location.lng,
+                });
+                console.log('Selected place:', data);
+                console.log('Location Details:', details);
+              }}
+              query={{
+                key: 'AIzaSyCJSALgtJFlCsqxa-2oNImKXy3Zq6X9UIM', // Replace with your Google API Key
+                language: 'en',
+              }}
+              fetchDetails={true}
+              onFail={error => console.error(error)}
+              styles={{
+                container: {
+                  width: '100%',
+                  zIndex: 10,
+                },
+                textInput: {
+                  height: 50,
+                  borderColor: '#ddd',
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  paddingHorizontal: 15,
+                  fontSize: 16,
+                  backgroundColor: '#fff',
+                },
+                listView: {
+                  backgroundColor: 'white',
+                  zIndex: 20,
+                },
+              }}
+            />
           </View>
         ))}
 
-        {/* Google Places Autocomplete */}
-        <GooglePlacesAutocomplete
-          placeholder="Search"
-          onPress={(data, details = null) => {
-            console.log(data, details);
-          }}
-          query={{
-            key: GOOGLE_API_KEY, // Replace with your Google API Key
-            language: 'en',
-          }}
-        />
-
-        <TouchableOpacity style={styles.addButton} onPress={() => console.log('Add people pressed')}>
+        <TouchableOpacity style={styles.addButton} onPress={addFriend}>
           <Text style={styles.addButtonText}>Add People</Text>
         </TouchableOpacity>
 
@@ -135,5 +182,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default FriendsScreen;
+
+
 

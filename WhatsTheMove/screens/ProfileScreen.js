@@ -1,23 +1,27 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Text, View, Image } from 'react-native';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { Input } from 'react-native-elements';
 
-export default function ProfileScreen() {
+import { GOOGLE_API_KEY } from 'react-native-dotenv';
+
+const GOOGLE_PLACES_API_KEY = GOOGLE_API_KEY;
+
+const GooglePlacesInput = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Profile Screen</Text>
-    </View>
+    <GooglePlacesAutocomplete
+      query={{
+        key: GOOGLE_PLACES_API_KEY,
+        language: 'en', // language of the results
+      }}
+      onPress={(data, details) => console.log(data, details)}
+      textInputProps={{
+        InputComp: Input,
+        leftIcon: { type: 'font-awesome', name: 'chevron-left' },
+        errorStyle: { color: 'red' },
+      }}
+    />
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-});
+export default GooglePlacesInput;
