@@ -165,57 +165,68 @@ app.get("/pinata-test", async (req, res) => {
   }
 });
 
-app.post("/upload", upload.array("media"), async (req, res) => {
-  try {
-    const { title, content } = req.body; // Blog post data
-    const files = req.files; // Uploaded media files
-    const mediaUrls = [];
-
-    // Step 1: Handle media uploads
-    if (files && files.length > 0) {
-      for (const file of files) {
-        const data = new FormData();
-        data.append("file", fs.createReadStream(file.path));
-
-        const metadata = JSON.stringify({
-          name: file.originalname,
-          keyvalues: { type: "blog_media" },
-        });
-        data.append("pinataMetadata", metadata);
-
-        // Pin file to IPFS
-        const response = await pinataRequest("/pinning/pinFileToIPFS", "POST", data, {
-          "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
-        });
-
-        // Collect the URL for each uploaded file
-        mediaUrls.push(`https://gateway.pinata.cloud/ipfs/${response.IpfsHash}`);
-        fs.unlinkSync(file.path); // Clean up temporary files
+app.post("/upload", upload.single("media"), async (req, res) => {
+    try {
+      console.log("Received file:", req.file);
+  
+      const { title, content } = req.body; // Extract text content from request body
+      const file = req.file; // The single uploaded file
+      let mediaUrl = null;
+  
+      // Validate and handle file upload
+      if (file) {
+        try {
+          const data = new FormData();
+          data.append("file", fs.createReadStream(file.path)); // Add file to form data
+  
+          const metadata = JSON.stringify({
+            name: file.originalname,
+            keyvalues: { type: "blog_media" },
+          });
+          data.append("pinataMetadata", metadata); // Add metadata
+  
+          // Pin file to IPFS
+          console.log("Uploading media file to Pinata...");
+          const pinResponse = await pinataRequest("/pinning/pinFileToIPFS", "POST", data, {
+            "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
+          });
+  
+          // Construct the media URL
+          mediaUrl = `https://gateway.pinata.cloud/ipfs/${pinResponse.IpfsHash}`;
+          console.log("Media successfully uploaded. URL:", mediaUrl);
+  
+          // Clean up temporary file
+          fs.unlinkSync(file.path);
+        } catch (uploadError) {
+          console.error("Error uploading media file to Pinata:", uploadError.message);
+          throw new Error("Media upload to Pinata failed");
+        }
       }
+  
+      // Prepare blog post data
+      const blogPost = {
+        title: title || "Untitled",
+        content: content || "No content available.",
+        media: mediaUrl ? [mediaUrl] : [], // Include media URL if available
+      };
+  
+      // Pin blog post JSON to IPFS
+      console.log("Uploading blog post JSON to Pinata...");
+      const jsonResponse = await pinataRequest("/pinning/pinJSONToIPFS", "POST", blogPost, {
+        "Content-Type": "application/json",
+      });
+  
+      // Respond with the result
+      res.status(200).json({
+        success: true,
+        cid: jsonResponse.IpfsHash, // IPFS CID of the pinned JSON
+        mediaUrls: blogPost.media, // Return media URLs for immediate use
+      });
+    } catch (error) {
+      console.error("Error uploading blog post:", error.message);
+      res.status(500).json({ error: `Failed to upload blog post: ${error.message}` });
     }
-
-    // Step 2: Create the JSON object to store
-    const blogPost = {
-      title,
-      content,
-      media: mediaUrls, // Array of URLs for uploaded media
-    };
-
-    // Step 3: Pin JSON object to IPFS
-    const response = await pinataRequest("/pinning/pinJSONToIPFS", "POST", blogPost, {
-      "Content-Type": "application/json",
-    });
-
-    res.status(200).json({
-      success: true,
-      cid: response.IpfsHash, // CID of the pinned JSON object
-      mediaUrls, // Media URLs in case they need to be displayed immediately
-    });
-  } catch (error) {
-    console.error("Error uploading blog post:", error.message);
-    res.status(500).json({ error: `Failed to upload blog post: ${error.message}` });
-  }
-});
+  });
 
 app.post("/calculate-midpoint", (req, res) => {
   try {
