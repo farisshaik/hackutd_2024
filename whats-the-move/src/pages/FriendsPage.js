@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import axios from 'axios';
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import { useNavigate } from 'react-router-dom';
-const BASE_URL = 'AIzaSyBOqjnER7AnSnlMaj_eqjLdjstI4zR91UM';
+
+const API_KEY = process.env.REACT_APP_GOOGLE_API_KEY;
 
 const FriendsPage = () => {
     
@@ -11,6 +12,30 @@ const FriendsPage = () => {
     
   const [friends, setFriends] = useState([{ id: 1, name: '', location: null }]);
   const [nextId, setNextId] = useState(2);
+
+  const [isLoaded, setIsLoaded] = useState(false);  // Add this state
+
+  // Add useEffect here
+  useEffect(() => {
+    const loadGoogleMapsScript = () => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => setIsLoaded(true);
+      document.head.appendChild(script);
+    };
+
+    if (!window.google) {
+      loadGoogleMapsScript();
+    } else {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
 
   const addFriend = () => {
     setFriends([...friends, { id: nextId, name: '', location: null }]);
@@ -36,7 +61,7 @@ const FriendsPage = () => {
       const coordinates = await Promise.all(
         locationsArray.map(async (location) => {
           const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?place_id=${location.place_id}&key=${BASE_URL}`
+            `https://maps.googleapis.com/maps/api/geocode/json?place_id=${location.place_id}&key=${API_KEY}`
           );
           const { lat, lng } = response.data.results[0].geometry.location;
           return [lat, lng];
@@ -69,7 +94,7 @@ const FriendsPage = () => {
                 selectProps={{
                   placeholder: 'Your address',
                   onChange: (value) => {
-                    updateFriend(1, 'location', {
+                    updateFriend(0, 'location', {
                         description: value.label,
                         place_id: value.value.place_id
                       });
@@ -93,7 +118,7 @@ const FriendsPage = () => {
         {friends.map((friend, index) => (
           <div key={friend.id} className="mb-4">
             <label className="block text-sm font-medium mb-2">
-              Friend {friend.id}
+                {friend.id === 0 ? 'You' : `Friend ${friend.id}`}            
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -107,7 +132,7 @@ const FriendsPage = () => {
               <div className="w-2/3">
                 <GooglePlacesAutocomplete
                   selectProps={{
-                    placeholder: 'Friend address',
+                    placeholder: 'Friend\'s address',
                     onChange: (value) => {
                       updateFriend(friend.id, 'location', {
                         description: value.label,
