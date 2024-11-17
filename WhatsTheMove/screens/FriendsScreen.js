@@ -1,35 +1,30 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  TextInput,
-} from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
+import { Trash2 } from 'lucide-react';
 import axios from 'axios';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { GooglePlacesAutocomplete } from 'react-google-places-autocomplete';
 
-const BASE_URL = 'https://us-central1-hackutd24-whatsthemove.cloudfunctions.net/api'; // Define the base URL  
+const BASE_URL = 'AIzaSyBOqjnER7AnSnlMaj_eqjLdjstI4zR91UM';
 
-const FriendsScreen = () => {
-  const [friends, setFriends] = useState([{ id: 1, location: null }]);
-  const [locations, setLocations] = useState([]); // To store coordinates of locations
+const FriendsPage = () => {
+  const [friends, setFriends] = useState([{ id: 1, name: '', location: null }]);
+  const [nextId, setNextId] = useState(2);
 
-  // Add a new friend
   const addFriend = () => {
-    setFriends([...friends, { id: friends.length + 1, location: null }]);
+    setFriends([...friends, { id: nextId, name: '', location: null }]);
+    setNextId(nextId + 1);
   };
 
-  // Update friend's location
-  const updateLocation = (id, locationData) => {
-    setFriends(friends.map(friend =>
-      friend.id === id ? { ...friend, location: locationData } : friend
+  const removeFriend = (id) => {
+    setFriends(friends.filter(friend => friend.id !== id));
+    setNextId(nextId - 1);
+  };
+
+  const updateFriend = (id, field, value) => {
+    setFriends(friends.map(friend => 
+      friend.id === id ? { ...friend, [field]: value } : friend
     ));
   };
 
-  // Handle Continue button, log locations to the console (or send them to your API)
   const handleContinue = async () => {
     const locationsArray = friends.map(friend => friend.location).filter(location => location !== null);
     console.log('Locations:', locationsArray);
@@ -43,146 +38,112 @@ const FriendsScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="flex-1 overflow-y-auto px-4 py-6 pb-32">
         {/* You input */}
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>You</Text>
-          <View style={styles.inputWrapper}>
-            <TextInput style={styles.input} placeholder="Your Location" />
-          </View>
-        </View>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">You</label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Name"
+              className="w-1/3 p-2 border-2 border-gray-300 rounded-md shadow-sm 
+                       focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+            <div className="w-2/3">
+              <GooglePlacesAutocomplete
+                selectProps={{
+                  placeholder: 'Your address',
+                  onChange: (value) => {
+                    console.log('Your location:', value);
+                  },
+                  styles: {
+                    control: (provided) => ({
+                      ...provided,
+                      borderRadius: '0.375rem',
+                      borderColor: '#d1d5db',
+                      height: '42px'
+                    })
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Friend inputs */}
-        {friends.map((friend) => (
-          <View key={friend.id} style={styles.inputContainer}>
-            <Text style={styles.label}>Friend {friend.id}</Text>
-            <View style={styles.inputWrapper}>
-              {/* <TextInput
-                style={styles.input}
-                placeholder={`Friend ${friend.id} Location`}
-              /> */}
-              <TouchableOpacity style={styles.deleteButton}>
-                <Feather name="trash-2" size={20} color="#666" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Google Places Input for each friend */}
-            <GooglePlacesAutocomplete
-              placeholder="Search Location"
-              onPress={(data, details = null) => {
-                // Update location for the specific friend
-                updateLocation(friend.id, {
-                  name: data.description,
-                  lat: details.geometry.location.lat,
-                  lng: details.geometry.location.lng,
-                });
-                console.log('Selected place:', data);
-                console.log('Location Details:', details);
-              }}
-              query={{
-                key: 'huh', // Replace with your Google API Key
-                language: 'en',
-              }}
-              fetchDetails={true}
-              onFail={error => console.error(error)}
-              styles={{
-                container: {
-                  width: '100%',
-                  zIndex: 10,
-                },
-                textInput: {
-                  height: 50,
-                  borderColor: '#ddd',
-                  borderWidth: 1,
-                  borderRadius: 8,
-                  paddingHorizontal: 15,
-                  fontSize: 16,
-                  backgroundColor: '#fff',
-                },
-                listView: {
-                  backgroundColor: 'white',
-                  zIndex: 20,
-                },
-              }}
-            />
-          </View>
+        {friends.map((friend, index) => (
+          <div key={friend.id} className="mb-4">
+            <label className="block text-sm font-medium mb-2">
+              Friend {friend.id}
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Name"
+                value={friend.name}
+                onChange={(e) => updateFriend(friend.id, 'name', e.target.value)}
+                className="w-1/3 p-2 border-2 border-gray-300 rounded-md shadow-sm 
+                         focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+              <div className="w-2/3">
+                <GooglePlacesAutocomplete
+                  selectProps={{
+                    placeholder: 'Friend address',
+                    onChange: (value) => {
+                      updateFriend(friend.id, 'location', {
+                        description: value.label,
+                        place_id: value.value.place_id
+                      });
+                    },
+                    styles: {
+                      control: (provided) => ({
+                        ...provided,
+                        borderRadius: '0.375rem',
+                        borderColor: '#d1d5db',
+                        height: '42px'
+                      })
+                    }
+                  }}
+                />
+              </div>
+              {index > 0 && (
+                <button
+                  onClick={() => removeFriend(friend.id)}
+                  className="flex-shrink-0 h-10 w-10 flex items-center justify-center 
+                           border-2 border-gray-300 rounded-md
+                           hover:bg-gray-100 transition-colors duration-200"
+                  aria-label="Remove friend"
+                >
+                  <Trash2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
+          </div>
         ))}
+      </div>
 
-        <TouchableOpacity style={styles.addButton} onPress={addFriend}>
-          <Text style={styles.addButtonText}>Add People</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-          <Text style={styles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      {/* Fixed bottom section */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3">
+        <button
+          onClick={addFriend}
+          className="w-full bg-black text-white py-2 rounded-md 
+                   hover:bg-gray-800 transition-colors duration-200
+                   text-sm font-medium"
+        >
+          Add People
+        </button>
+        <button
+          onClick={handleContinue}
+          className="w-full bg-blue-500 text-white py-2 rounded-md 
+                   hover:bg-blue-600 transition-colors duration-200
+                   text-sm font-medium"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    fontSize: 16,
-    backgroundColor: '#fff',
-  },
-  deleteButton: {
-    padding: 10,
-    marginLeft: 10,
-  },
-  addButton: {
-    backgroundColor: '#000',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  continueButton: {
-    backgroundColor: '#4A90E2',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  continueButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
-
-export default FriendsScreen;
-
-
-
+export default FriendsPage;

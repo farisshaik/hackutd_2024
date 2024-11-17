@@ -1,8 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import FriendsScreen from './screens/FriendsScreen';
-import HomeScreen from './screens/HomeScreen';
-import FavoritesScreen from './screens/FavoritesScreen';
+import HomePage from './pages/HomePage';  // Import your pages
+import FriendsPage from './pages/FriendsPage';
 import ProfileScreen from './screens/ProfileScreen';
 import ResultsScreen from './screens/ResultsScreen';
 import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline } from 'react-icons/io5';
@@ -45,8 +44,8 @@ const App = () => {
       <div>
         <TabNavigator />
         <Routes>
-          <Route path="/" element={<HomeScreen />} />
-          <Route path="/friends" element={<FriendsScreen />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/friends" element={<FriendsPage />} />
           <Route path="/results" element={<ResultsScreen />} />
           <Route path="/profile" element={<ProfileScreen />} />
         </Routes>
