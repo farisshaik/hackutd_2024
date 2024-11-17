@@ -41,6 +41,12 @@ body {
   color: #456188; /* Lighter blue on hover */
 }
 
+.map-container {
+  height: 100vh; /* or a specific height you want */
+  width: 100%;
+}
+
+
 main {
   padding: 2rem;
   background-color: transparent;
