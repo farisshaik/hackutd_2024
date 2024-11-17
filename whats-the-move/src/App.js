@@ -5,30 +5,31 @@ import HomeScreen from './screens/HomeScreen';
 import FavoritesScreen from './screens/FavoritesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline } from 'react-icons/io5';
+import './App.css'; // Import your CSS file
 
 const TabNavigator = () => (
-  <nav>
-    <ul style={{ display: 'flex', justifyContent: 'space-around', listStyle: 'none', padding: 0 }}>
+  <nav className="navbar">
+    <ul className="nav-list">
       <li>
-        <Link to="/" style={{ textDecoration: 'none', color: 'gray' }}>
+        <Link to="/" className="nav-link">
           <IoHomeOutline size={24} />
           <span>Home</span>
         </Link>
       </li>
       <li>
-        <Link to="/friends" style={{ textDecoration: 'none', color: 'gray' }}>
+        <Link to="/friends" className="nav-link">
           <IoPeopleOutline size={24} />
           <span>Friends</span>
         </Link>
       </li>
       <li>
-        <Link to="/favorites" style={{ textDecoration: 'none', color: 'gray' }}>
+        <Link to="/favorites" className="nav-link">
           <IoHeartOutline size={24} />
           <span>Favorites</span>
         </Link>
       </li>
       <li>
-        <Link to="/profile" style={{ textDecoration: 'none', color: 'gray' }}>
+        <Link to="/profile" className="nav-link">
           <IoPersonOutline size={24} />
           <span>Profile</span>
         </Link>
@@ -53,4 +54,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App
