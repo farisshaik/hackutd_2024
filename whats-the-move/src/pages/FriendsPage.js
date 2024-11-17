@@ -41,7 +41,11 @@ const FriendsPage = () => {
           return [lat, lng];
         })
       );
+      
+      // Store both coordinates and friends data
       localStorage.setItem("coordinates", JSON.stringify(coordinates));
+      localStorage.setItem("friends", JSON.stringify(validLocations));
+      
       navigate("/midpoint");
     } catch (error) {
       console.error("Error converting addresses to coordinates:", error);

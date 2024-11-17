@@ -49,6 +49,8 @@ const Midpoint = () => {
           { coordinates }
         );
         setMidpoint(response.data.midpoint);
+        // In your Midpoint component
+        localStorage.setItem('midpoint', JSON.stringify(response.data.midpoint));
         
         if (isScriptLoaded) {
           // Initialize map and service after getting midpoint and script is loaded
@@ -95,8 +97,20 @@ const Midpoint = () => {
       service.textSearch(request, (results, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
 
-          const limitedResults = results.slice(0, 7);
-          localStorage.setItem('placesResults', JSON.stringify(limitedResults));
+          const processedResults = results.slice(0, 10).map(place => ({
+            ...place,
+            geometry: {
+              ...place.geometry,
+              location: {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+              }
+            },
+            photos: place.photos ? place.photos.map(photo => ({
+              url: photo.getUrl()
+            })) : []
+          }));
+          localStorage.setItem('placesResults', JSON.stringify(processedResults));
           navigate('/poi');
         } else {
           console.error('Error searching places:', status);

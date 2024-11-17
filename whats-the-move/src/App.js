@@ -6,6 +6,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import ResultsScreen from './screens/ResultsScreen';
 import Midpoint from './pages/Midpoint'
 import POI from './pages/PlaceOfInterest';
+import DirectionsPage from './pages/DirectionsPage';
 import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline } from 'react-icons/io5';
 import './App.css'; // Import your CSS file
 
@@ -52,6 +53,9 @@ const App = () => {
           <Route path="/profile" element={<ProfileScreen />} />
           <Route path="/midpoint" element={<Midpoint />} />
           <Route path="/poi" element={<POI />} />
+          <Route path="/poi" element={<POI />} />
+          <Route path="/directions" element={<DirectionsPage />} />
+
         </Routes>
       </div>
     </Router>
