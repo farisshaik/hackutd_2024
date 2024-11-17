@@ -9,8 +9,23 @@ import {
   Pressable
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import axios from 'axios';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import 'react-native-get-random-values';
+import { GOOGLE_API_KEY } from '@env'; 
+
+const BASE_URL = 'https://us-central1-hackutd24-whatsthemove.cloudfunctions.net/api'; // Define the base URL  
 
 const App = () => {
+  const handleContinue = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/greeting`);
+      console.log('API Response:', response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -18,10 +33,7 @@ const App = () => {
         <View style={styles.inputContainer}>
           <Text style={styles.label}>You</Text>
           <View style={styles.inputWrapper}>
-            <TextInput
-              style={styles.input}
-              placeholder=""
-            />
+            <TextInput style={styles.input} placeholder="" />
           </View>
         </View>
 
@@ -30,34 +42,34 @@ const App = () => {
           <View key={num} style={styles.inputContainer}>
             <Text style={styles.label}>Friend {num}</Text>
             <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder=""
-              />
-              <TouchableOpacity
-                style={styles.deleteButton}
-              >
+              <TextInput style={styles.input} placeholder="" />
+              <TouchableOpacity style={styles.deleteButton}>
                 <Feather name="trash-2" size={20} color="#666" />
               </TouchableOpacity>
             </View>
           </View>
         ))}
 
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => console.log('Add people pressed')}
-        >
+        {/* Google Places Autocomplete */}
+        <GooglePlacesAutocomplete
+          placeholder="Search"
+          onPress={(data, details = null) => {
+            console.log(data, details);
+          }}
+          query={{
+            key: GOOGLE_API_KEY, // Replace with your Google API Key
+            language: 'en',
+          }}
+        />
+
+        <TouchableOpacity style={styles.addButton} onPress={() => console.log('Add people pressed')}>
           <Text style={styles.addButtonText}>Add People</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.continueButton}
-          onPress={() => console.log('Continue pressed')}
-        >
+        <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
           <Text style={styles.continueButtonText}>Continue</Text>
         </TouchableOpacity>
       </View>
-
     </SafeAreaView>
   );
 };
@@ -92,14 +104,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontSize: 16,
     backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
   },
   deleteButton: {
     padding: 10,
@@ -129,28 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  navbar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#333',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#444',
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-  },
-  navText: {
-    fontSize: 12,
-    marginTop: 4,
-    color: '#666',
-  },
-  activeNavText: {
-    color: '#4A90E2',
-  },
 });
 
 export default App;
+
