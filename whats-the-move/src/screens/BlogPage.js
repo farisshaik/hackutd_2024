@@ -7,50 +7,88 @@ const BlogPage = () => {
   const [content, setContent] = useState("");
   const [media, setMedia] = useState([]);
 
-  // Fetch posts from your backend or Pinata
+  // Fetch posts from your backend
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("/api/blogs");
-        setPosts(response.data.posts); // Assumes response contains a `posts` array
+        const response = await axios.get(
+          "https://us-central1-hackutd24-whatsthemove.cloudfunctions.net/api/blogs"
+        );
+        setPosts(response.data.posts); // Update with API response structure
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
     };
-  
+
     fetchPosts();
   }, []);
 
   const handleFileChange = (e) => {
-    setMedia(Array.from(e.target.files));
+    setMedia(Array.from(e.target.files)); // Store the media files locally
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-    media.forEach((file) => formData.append("media", file));
-
     try {
-      const response = await axios.post("/api/upload", formData); // Replace with your upload endpoint
-      console.log("Blog post uploaded. IPFS CID:", response.data.cid);
-      // Fetch updated posts
+      const mediaUrls = [];
+
+      // Step 1: Upload each media file to IPFS
+      if (media.length > 0) {
+        for (const file of media) {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const response = await axios.post(
+            "https://us-central1-hackutd24-whatsthemove.cloudfunctions.net/api/upload",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          mediaUrls.push(`https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`);
+        }
+      }
+
+      // Step 2: Submit the blog post with content and media URLs
+      const blogPost = {
+        title,
+        content,
+        media: mediaUrls,
+      };
+
+      const blogResponse = await axios.post(
+        "https://us-central1-hackutd24-whatsthemove.cloudfunctions.net/api/upload",
+        blogPost,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Blog post uploaded. IPFS CID:", blogResponse.data.cid);
+
+      // Add the new post to the state
       setPosts((prevPosts) => [
         ...prevPosts,
         {
-          id: response.data.cid,
+          id: blogResponse.data.cid,
           title,
           content,
-          media: response.data.mediaUrls,
+          media: mediaUrls,
         },
       ]);
+
+      // Clear form fields
       setTitle("");
       setContent("");
       setMedia([]);
     } catch (error) {
-      console.error("Error uploading blog post:", error);
+      console.error("Error uploading blog post:", error.response || error.message);
     }
   };
 
