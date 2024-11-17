@@ -81,7 +81,7 @@ const FriendsScreen = () => {
                 console.log('Location Details:', details);
               }}
               query={{
-                key: 'AIzaSyCJSALgtJFlCsqxa-2oNImKXy3Zq6X9UIM', // Replace with your Google API Key
+                key: 'huh', // Replace with your Google API Key
                 language: 'en',
               }}
               fetchDetails={true}
