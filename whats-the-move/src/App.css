@@ -1,35 +1,54 @@
-body {
+body, html {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #d5d5d5;
-  min-height: 100vh; /* Ensure the body takes the full viewport height */
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #d5d5d5; /* Page background */
 }
 
 .app {
-  text-align: center;
-  min-height: 100vh; /* Make sure the app wrapper also takes the full height */
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 
 .navbar {
-  background-color: #00509e; /* Primary blue */
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px; /* Match this with the padding-top in .content */
+  background-color: #00509e; /* Navbar background */
+  display: flex; /* Enable Flexbox */
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically */
+  z-index: 1000; /* Ensure it stays above other content */
 }
 
 .nav-list {
   display: flex;
   justify-content: space-around;
+  align-items: center; /* Ensure vertical centering */
   width: 100%;
-  max-width: 800px;
+  max-width: 800px; /* Optional: limits width of navbar */
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
+.content {
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  padding-top: 60px; /* Same as navbar height */
+  background-color: #ffffff; /* Content background */
+}
+
 .nav-link {
+  display: flex; /* Enable Flexbox for the icon and text */
+  flex-direction: column; /* Stack icon and text vertically */
+  align-items: center; /* Center items */
   color: #f8f9fa; /* Light gray/white text */
   text-decoration: none;
   font-size: 16px;
@@ -46,11 +65,11 @@ body {
   width: 100%;
 }
 
-
 main {
   padding: 2rem;
   background-color: transparent;
   border-top: 1px solid #d1e4ff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   flex: 1;
+  margin-top: 70px; /* Add margin to avoid content overlapping with the navbar */
 }

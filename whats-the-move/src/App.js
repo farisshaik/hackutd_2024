@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+<<<<<<< HEAD
 import HomePage from './pages/HomePage'; // Import your pages
 import FriendsPage from './pages/FriendsPage';
 import ProfileScreen from './screens/ProfileScreen';
@@ -8,6 +9,17 @@ import BlogPage from './screens/BlogPage';
 import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline, IoMapOutline } from 'react-icons/io5';
 import { ThemeProvider } from "@material-tailwind/react"; // Import ThemeProvider
 import './App.css'; // Import your CSS file
+=======
+import HomePage from './pages/HomePage'; 
+import FriendsPage from './pages/FriendsPage';
+import ProfileScreen from './screens/ProfileScreen';
+import ResultsScreen from './screens/ResultsScreen';
+import Midpoint from './pages/Midpoint';
+import POI from './pages/PlaceOfInterest';
+import DirectionsPage from './pages/DirectionsPage';
+import { IoHomeOutline, IoPeopleOutline, IoHeartOutline, IoPersonOutline } from 'react-icons/io5';
+import './App.css';
+>>>>>>> d9f7d803df4dc0a13bbfa2588d3ee6fed8622fb8
 
 const TabNavigator = () => (
   <nav className="navbar">

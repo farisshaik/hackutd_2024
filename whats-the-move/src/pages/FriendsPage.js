@@ -41,7 +41,11 @@ const FriendsPage = () => {
           return [lat, lng];
         })
       );
+      
+      // Store both coordinates and friends data
       localStorage.setItem("coordinates", JSON.stringify(coordinates));
+      localStorage.setItem("friends", JSON.stringify(validLocations));
+      
       navigate("/midpoint");
     } catch (error) {
       console.error("Error converting addresses to coordinates:", error);
@@ -70,12 +74,15 @@ const FriendsPage = () => {
                 <GooglePlacesAutocomplete
                   apiKey={API_KEY}
                   selectProps={{
-                    placeholder: "Friend's address",
+                    placeholder: friend.id === 0 ? "Your address" : "Friend's address",
                     onChange: (value) =>
-                      updateFriend(friend.id, "location", {
-                        description: value.label,
-                        place_id: value.value.place_id,
-                      }),
+                      updateFriend(friend.id, "location", 
+                        value ? {
+                          description: value.label,
+                          place_id: value.value.place_id,
+                        } : null
+                      ),
+                    isClearable: true,
                   }}
                 />
               </div>
