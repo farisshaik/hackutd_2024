@@ -2,15 +2,29 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on PR
-'on': pull_request
+
+'on':
+  pull_request:
+    paths:
+      - 'express-backend/**' # Trigger only when files in the express-backend folder are changed
+
 jobs:
   build_and_preview:
     if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
     runs-on: ubuntu-latest
     steps:
+      # Checkout the repository
       - uses: actions/checkout@v3
+
+      # Change to the express-backend directory
+      - name: Change to backend directory
+        working-directory: express-backend
+        run: echo "Using the express-backend directory"
+
+      # Deploy to Firebase Hosting and Functions
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HACKUTD24_WHATSTHEMOVE }}'
           projectId: hackutd24-whatsthemove
+          entryPoint: express-backend
