@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
-import config, { makeApiCall } from '../config/api';
+import config from '../config/api';
 
 // Get API key from environment variable
 const GOOGLE_MAPS_API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
@@ -11,26 +12,37 @@ if (!GOOGLE_MAPS_API_KEY) {
 }
 
 const HomeScreen = () => {
-  // Default center coordinates (Richardson, TX - Campbell Road)
+  const [places, setPlaces] = useState([]);
+  
+  // Default center coordinates
   const defaultCenter = {
     lat: 32.9856,
-    lng: -96.7501,
+    lng: -96.7501
   };
 
-  // Fetch data function (example usage)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await makeApiCall('/endpoint');
-        // Handle response if necessary
-      } catch (error) {
-        // Handle error
-        console.error('Error fetching data:', error);
-      }
-    };
+  // Define midpoint using defaultCenter for now
+  const midpoint = defaultCenter;
 
-    fetchData();
-  }, []); // Empty dependency array ensures this runs once on mount
+  // Function to fetch nearby places
+  const fetchNearbyPlaces = async () => {
+    console.log('Calculate button clicked!');
+    try {
+      // Request to your server's API endpoint
+      const response = await axios.get('http://localhost:5001/api/nearbyplaces', {
+        params: {
+          lat: midpoint.lat,
+          lng: midpoint.lng,
+        },
+      });
+      console.log('API Response:', response.data);
+      setPlaces(response.data.results.results.slice(0, 5)); // Note the additional 'results' nesting
+    } catch (error) {
+      console.error('Error fetching nearby places:', error);
+    }
+  };
+  
+  
+  
 
   return (
     <div style={styles.container}>
@@ -39,12 +51,23 @@ const HomeScreen = () => {
           <Map
             defaultCenter={defaultCenter}
             defaultZoom={15}
-            gestureHandling="greedy"
+            gestureHandling={'greedy'}
             style={styles.map}
           >
             <Marker position={defaultCenter} />
           </Map>
         </APIProvider>
+      </div>
+      <button style={styles.calculateButton} onClick={fetchNearbyPlaces}>
+        Calculate
+      </button>
+      <div style={styles.placesContainer}>
+        {places.map((place, index) => (
+          <div key={index} style={styles.placeItem}>
+            <h3>{place.name}</h3>
+            <p>{place.vicinity}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -53,23 +76,44 @@ const HomeScreen = () => {
 const styles = {
   container: {
     display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'column',
+    height: '100vh',
     padding: '20px',
-    backgroundColor: '#f0f4f8', // Soft background color to contrast the map
   },
   mapContainer: {
-    width: '100%',
-    height: '80%', // Adjust height to make room for any additional elements if needed
+    flex: 1,
     borderRadius: '12px',
     overflow: 'hidden',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Slightly stronger shadow for a more modern look
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    width: '100%',
+    height: '60vh',
   },
   map: {
     width: '100%',
     height: '100%',
+  },
+  calculateButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#007BFF',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  placesContainer: {
+    marginTop: '20px',
+    maxHeight: '30vh',
+    overflowY: 'auto',
+    width: '100%',
+    textAlign: 'left',
+  },
+  placeItem: {
+    padding: '10px',
+    borderBottom: '1px solid #ddd',
   },
 };
 
