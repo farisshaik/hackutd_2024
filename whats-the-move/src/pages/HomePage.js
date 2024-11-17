@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Users, User, BarChart2 } from 'lucide-react';
+import { Users, User, BarChart2, BookOpen } from 'lucide-react';
 
 const HomePage = () => {
   return (
@@ -53,16 +53,16 @@ const HomePage = () => {
             </div>
           </Link>
 
-          {/* Results Button */}
+          {/* Explore Button */}
           <Link 
-            to="/results" 
+            to="/blog" 
             className="group transition-all duration-300"
           >
             <div className="bg-green-500 rounded-2xl p-8 shadow-lg shadow-green-500/20 
                          hover:shadow-xl hover:shadow-green-500/30 transition-all duration-300
                          flex items-center justify-center space-x-3">
-              <BarChart2 size={24} className="text-white" />
-              <span className="text-white text-lg font-medium">Results</span>
+              <BookOpen size={24} className="text-white" />
+              <span className="text-white text-lg font-medium">Explore</span>
             </div>
           </Link>
         </div>

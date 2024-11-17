@@ -11,18 +11,19 @@ export default function ProfileScreen() {
     name: 'Khabib Nurmagomedov',
     email: 'khabib@nurmagomedov.com',
     bio: 'Like to smash',
-    favoriteLocations: ['Dagestan', 'Central Park', 'Gold’s Gym'],
+    favoriteLocations: ['Dagestan', 'Central Park', 'Gold\'s Gym'],
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.profileCard}>
-        {/* Placeholder Profile Picture */}
-        <img
-          src={require('../khabib.jpeg')}
-          alt="Profile"
-          style={styles.profilePicture}
-        />
+        <div style={styles.profilePictureContainer}>
+          <img
+            src={require('../khabib.jpeg')}
+            alt="Profile"
+            style={styles.profilePicture}
+          />
+        </div>
         <h1 style={styles.name}>{userData.name}</h1>
         <p style={styles.email}>{userData.email}</p>
         <p style={styles.bio}>{userData.bio}</p>
@@ -36,7 +37,6 @@ export default function ProfileScreen() {
 
         <button style={styles.editButton}>Edit Profile</button>
 
-        {/* Toggle Button for Sharing Location */}
         <div style={styles.toggleContainer}>
           <label style={styles.toggleLabel}>
             Share Location with Friends: 
@@ -73,12 +73,17 @@ const styles = {
     maxWidth: '400px',
     textAlign: 'center',
   },
+  profilePictureContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: '0 auto 15px auto',
+  },
   profilePicture: {
     width: '150px',
     height: '150px',
     borderRadius: '50%',
     objectFit: 'cover',
-    marginBottom: '15px',
   },
   name: {
     fontSize: '28px',
