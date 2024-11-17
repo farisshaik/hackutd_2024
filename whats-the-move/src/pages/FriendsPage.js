@@ -10,8 +10,8 @@ const FriendsPage = () => {
     
   const navigate = useNavigate();
     
-  const [friends, setFriends] = useState([{ id: 1, name: '', location: null }]);
-  const [nextId, setNextId] = useState(2);
+  const [friends, setFriends] = useState([{ id: 0, name: '', location: null }]);
+  const [nextId, setNextId] = useState(1);
 
   const [isLoaded, setIsLoaded] = useState(false);  // Add this state
 
@@ -48,27 +48,32 @@ const FriendsPage = () => {
   };
 
   const updateFriend = (id, field, value) => {
+    console.log('Updating friend:', id, field, value);
     setFriends(friends.map(friend => 
       friend.id === id ? { ...friend, [field]: value } : friend
     ));
   };
 
   const handleContinue = async () => {
-    const locationsArray = friends.map(friend => friend.location).filter(location => location !== null);
+    // Log entire friends array to debug
+    console.log('All friends:', friends);
     
-    // Store coordinates in localStorage or state management
+    // Filter out any entries with null locations first
+    const validLocations = friends.filter(friend => friend.location !== null);
+    console.log('Valid locations:', validLocations);
+  
     try {
       const coordinates = await Promise.all(
-        locationsArray.map(async (location) => {
+        validLocations.map(async (friend) => {
           const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?place_id=${location.place_id}&key=${API_KEY}`
+            `https://maps.googleapis.com/maps/api/geocode/json?place_id=${friend.location.place_id}&key=${API_KEY}`
           );
           const { lat, lng } = response.data.results[0].geometry.location;
           return [lat, lng];
         })
       );
       
-      console.log('Converted coordinates:', coordinates); // Debug log
+      console.log('Converted coordinates:', coordinates);
       localStorage.setItem('coordinates', JSON.stringify(coordinates));
       navigate('/midpoint');
     } catch (error) {
