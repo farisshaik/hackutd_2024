@@ -84,41 +84,7 @@ const FriendsPage = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <div className="flex-1 overflow-y-auto px-4 py-6 pb-32">
-        {/* You input */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">You</label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              placeholder="Name"
-              className="w-1/3 p-2 border-2 border-gray-300 rounded-md shadow-sm 
-                       focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
-            <div className="w-2/3">
-              <GooglePlacesAutocomplete
-                selectProps={{
-                  placeholder: 'Your address',
-                  onChange: (value) => {
-                    updateFriend(0, 'location', {
-                        description: value.label,
-                        place_id: value.value.place_id
-                      });
-                    console.log('Your location:', value);
-                  },
-                  styles: {
-                    control: (provided) => ({
-                      ...provided,
-                      borderRadius: '0.375rem',
-                      borderColor: '#d1d5db',
-                      height: '42px'
-                    })
-                  }
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
+      
         {/* Friend inputs */}
         {friends.map((friend, index) => (
           <div key={friend.id} className="mb-4">
