@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import axios from 'axios';
-import { GooglePlacesAutocomplete } from 'react-google-places-autocomplete';
-
+import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import { useNavigate } from 'react-router-dom';
 const BASE_URL = 'AIzaSyBOqjnER7AnSnlMaj_eqjLdjstI4zR91UM';
 
 const FriendsPage = () => {
+    
+  const navigate = useNavigate();
+    
   const [friends, setFriends] = useState([{ id: 1, name: '', location: null }]);
   const [nextId, setNextId] = useState(2);
 
@@ -27,13 +30,24 @@ const FriendsPage = () => {
 
   const handleContinue = async () => {
     const locationsArray = friends.map(friend => friend.location).filter(location => location !== null);
-    console.log('Locations:', locationsArray);
     
+    // Store coordinates in localStorage or state management
     try {
-      const response = await axios.get(`${BASE_URL}/greeting`);
-      console.log('API Response:', response.data);
+      const coordinates = await Promise.all(
+        locationsArray.map(async (location) => {
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?place_id=${location.place_id}&key=${BASE_URL}`
+          );
+          const { lat, lng } = response.data.results[0].geometry.location;
+          return [lat, lng];
+        })
+      );
+      
+      console.log('Converted coordinates:', coordinates); // Debug log
+      localStorage.setItem('coordinates', JSON.stringify(coordinates));
+      navigate('/midpoint');
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error converting addresses to coordinates:', error);
     }
   };
 
@@ -55,6 +69,10 @@ const FriendsPage = () => {
                 selectProps={{
                   placeholder: 'Your address',
                   onChange: (value) => {
+                    updateFriend(1, 'location', {
+                        description: value.label,
+                        place_id: value.value.place_id
+                      });
                     console.log('Your location:', value);
                   },
                   styles: {
@@ -124,24 +142,25 @@ const FriendsPage = () => {
       </div>
 
       {/* Fixed bottom section */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3">
         <button
-          onClick={addFriend}
-          className="w-full bg-black text-white py-2 rounded-md 
-                   hover:bg-gray-800 transition-colors duration-200
-                   text-sm font-medium"
+            onClick={addFriend}
+            className="w-full bg-black text-white py-2 rounded-md 
+                    hover:bg-gray-800 transition-colors duration-200
+                    text-sm font-medium"
         >
-          Add People
+            Add People
         </button>
-        <button
-          onClick={handleContinue}
-          className="w-full bg-blue-500 text-white py-2 rounded-md 
-                   hover:bg-blue-600 transition-colors duration-200
-                   text-sm font-medium"
+        <button 
+            onClick={handleContinue}
+            className="w-full bg-blue-500 text-white py-2 rounded-md 
+                    hover:bg-blue-600 transition-colors duration-200
+                    text-sm md:text-base
+                    focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
         >
-          Continue
+            Continue
         </button>
-      </div>
+        </div>
     </div>
   );
 };
