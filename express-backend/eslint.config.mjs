@@ -12,7 +12,7 @@ export default [
       },
     },
     rules: {
-      "react-hooks/exhaustive-deps": "off", // Disable the rule here
+      "react-hooks/exhaustive-deps": "off",
       "no-unused-vars": "off",
     },
   },
