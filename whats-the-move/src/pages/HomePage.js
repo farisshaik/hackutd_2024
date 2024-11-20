@@ -8,8 +8,11 @@ const HomePage = () => {
       {/* Application Title */}
       <header className="text-center mt-8">
         <h1 className="text-4xl font-light tracking-wide text-blue-600">
-          What's the Move
+          What's the Move?
         </h1>
+        <h2 className="text-2xl font-light text-gray-500">
+          A new way to hang out with friends. Click <i>Friends</i> to get started!
+          </h2>
       </header>
 
       {/* Main content container */}

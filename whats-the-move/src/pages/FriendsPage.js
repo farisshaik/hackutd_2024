@@ -53,8 +53,16 @@ const FriendsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <div className="flex-1 overflow-y-auto px-4 py-6 pb-32">
+    <div className="min-h-screen bg-white flex flex-col items-center">
+      <header className="text-center mt-8 w-full md:w-2/3">
+        <h1 className="text-4xl font-semibold tracking-wide text-blue-600 ">
+            Who's coming?
+          </h1>
+        <h2 className="text-2xl font-normal text-gray-500">
+          Enter your friends' names and addresses to start finding a midpoint.
+        </h2>
+      </header>
+      <div className="flex-1 overflow-y-auto px-4 py-6 pb-32 w-full md:w-2/3">
         {friends.map((friend, index) => (
           <div key={friend.id} className="mb-4">
             <label className="block text-sm font-medium mb-2">
@@ -68,9 +76,9 @@ const FriendsPage = () => {
                 onChange={(e) =>
                   updateFriend(friend.id, "name", e.target.value)
                 }
-                className="w-1/3 p-2 border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-full md:w-1/3 p-2 border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
-              <div className="w-2/3">
+              <div className="w-full md:w-2/3">
                 <GooglePlacesAutocomplete
                   apiKey={API_KEY}
                   selectProps={{
@@ -99,20 +107,20 @@ const FriendsPage = () => {
           </div>
         ))}
       </div>
-
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 space-y-3">
-        <button
-          onClick={addFriend}
-          className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium"
-        >
-          Add People
-        </button>
-        <button
-          onClick={handleContinue}
-          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-200 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-        >
-          Continue
-        </button>
+  
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+        <div className="w-full md:w-1/3 mx-auto space-y-3">
+          <button
+            onClick={addFriend}
+            className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium">
+            Add People
+          </button>
+          <button
+            onClick={handleContinue}
+            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-200 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+            Continue
+          </button>
+        </div>
       </div>
     </div>
   );
