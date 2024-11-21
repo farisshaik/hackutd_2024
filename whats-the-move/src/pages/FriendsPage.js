@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 import axios from "axios";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useNavigate } from "react-router-dom";
+import { Loader } from "@googlemaps/js-api-loader"; // Import script loader
 
 const API_KEY = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -11,6 +12,27 @@ const FriendsPage = () => {
 
   const [friends, setFriends] = useState([{ id: 0, name: "", location: null }]);
   const [nextId, setNextId] = useState(1);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+
+  // Load Google Maps script
+  useEffect(() => {
+    const loadGoogleMapsScript = async () => {
+      const loader = new Loader({
+        apiKey: API_KEY,
+        libraries: ["places"],
+      });
+
+      try {
+        await loader.load();
+        console.log("Google Maps script loaded successfully");
+        setIsScriptLoaded(true); // Mark script as loaded
+      } catch (error) {
+        console.error("Error loading Google Maps script:", error);
+      }
+    };
+
+    loadGoogleMapsScript();
+  }, []); // Only run once on component mount
 
   const addFriend = () => {
     setFriends([...friends, { id: nextId, name: "", location: null }]);
@@ -41,11 +63,11 @@ const FriendsPage = () => {
           return [lat, lng];
         })
       );
-      
+
       // Store both coordinates and friends data
       localStorage.setItem("coordinates", JSON.stringify(coordinates));
       localStorage.setItem("friends", JSON.stringify(validLocations));
-      
+
       navigate("/midpoint");
     } catch (error) {
       console.error("Error converting addresses to coordinates:", error);
@@ -55,9 +77,9 @@ const FriendsPage = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center">
       <header className="text-center mt-8 w-full md:w-2/3">
-        <h1 className="text-4xl font-semibold tracking-wide text-blue-600 ">
-            Who's coming?
-          </h1>
+        <h1 className="text-4xl font-semibold tracking-wide text-blue-600">
+          Who's coming?
+        </h1>
         <h2 className="text-2xl font-normal text-gray-500">
           Enter your friends' names and addresses to start finding a midpoint.
         </h2>
@@ -79,20 +101,28 @@ const FriendsPage = () => {
                 className="w-full md:w-1/3 p-2 border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
               <div className="w-full md:w-2/3">
-                <GooglePlacesAutocomplete
-                  apiKey={API_KEY}
-                  selectProps={{
-                    placeholder: friend.id === 0 ? "Your address" : "Friend's address",
-                    onChange: (value) =>
-                      updateFriend(friend.id, "location", 
-                        value ? {
-                          description: value.label,
-                          place_id: value.value.place_id,
-                        } : null
-                      ),
-                    isClearable: true,
-                  }}
-                />
+                {/* Conditionally render GooglePlacesAutocomplete */}
+                {isScriptLoaded ? (
+                  <GooglePlacesAutocomplete
+                    apiKey={API_KEY}
+                    selectProps={{
+                      placeholder:
+                        friend.id === 0 ? "Your address" : "Friend's address",
+                      onChange: (value) =>
+                        updateFriend(friend.id, "location",
+                          value
+                            ? {
+                                description: value.label,
+                                place_id: value.value.place_id,
+                              }
+                            : null
+                        ),
+                      isClearable: true,
+                    }}
+                  />
+                ) : (
+                  <p>Loading Google Places...</p> // Show a loading message
+                )}
               </div>
               {index > 0 && (
                 <button
@@ -107,17 +137,19 @@ const FriendsPage = () => {
           </div>
         ))}
       </div>
-  
+
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
         <div className="w-full md:w-1/3 mx-auto space-y-3">
           <button
             onClick={addFriend}
-            className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium">
+            className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 text-sm font-medium"
+          >
             Add People
           </button>
           <button
             onClick={handleContinue}
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-200 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors duration-200 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+          >
             Continue
           </button>
         </div>

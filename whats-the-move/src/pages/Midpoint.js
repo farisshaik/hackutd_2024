@@ -145,7 +145,7 @@ const Midpoint = () => {
         <h1 className="text-4xl font-semibold tracking-wide text-blue-600">What to do?</h1>
         <h2 className="text-2xl font-normal text-gray-500">
         Start typing to search for a type of location, like ‘restaurant,’ ‘park,’ or ‘coffee shop.’
-        <br></br> We’ll suggest options as you type to help you find the perfect spot to meet
+        <br></br> We’ll suggest options as you type to help you find the perfect spot to meet.
         </h2>
       </header>
       <div className="flex-1 overflow-y-auto px-4 py-6 pb-32 w-full md:w-2/3 mx-auto">
